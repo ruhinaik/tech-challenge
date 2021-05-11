@@ -16,7 +16,7 @@ shinyServer(function(input, output, session) {
 
   
   observe({
-    if (input$tabselected == 5) {
+    if (input$tabselected == 3) {
       df <- file_data()
       df <- file_data() %>% clean_names()
       dsnames = names(df)
@@ -151,7 +151,7 @@ shinyServer(function(input, output, session) {
       cb_options[dsnames] <- dsnames
       updateRadioButtons(
         session,
-        "xaxisGrp3",
+        "xaxisGrpHist",
         label = "Variable 1 of Interest:",
         choices = cb_options,
         selected = ""
@@ -162,19 +162,18 @@ shinyServer(function(input, output, session) {
   
   
   output$counts_plot <- renderPlot({
-    print("Plotting randomized plot.")
     df <- file_data()
     df <- subset(df, select = -c(STUDYID))
     gp <- NULL
     if (!is.null(df)) {
       xv <- input$xaxisGrp3
-      if (!is.null(xv) & !is.null(yv)) {
+      if (!is.null(xv)) {
         if (sum(xv %in% names(df)) > 0) {
           # suppresses error when changing files
-          mdf <- melt(df, id.vars = xv, measure.vars = yv)
+          mdf <- melt(df, id.vars = xv)
 
           mdf <- cbind(mdf, count = 1)
-
+          print(mdf)
           gp <- mdf %>%
             ggplot(aes_string(
               x = xv,
@@ -190,7 +189,7 @@ shinyServer(function(input, output, session) {
   })
   
   # heatmap plot
-  heat_map_plot <- reactive({
+  correlation_plot <- reactive({
     df <- file_data()
     df <- file_data() %>% clean_names()
     
@@ -215,8 +214,8 @@ shinyServer(function(input, output, session) {
     return(corrmatrix)
   })
   
-  output$heat_map <- renderPlot({
-    heat_map_plot()
+  output$correlations <- renderPlot({
+    correlation_plot()
   })
   
   
