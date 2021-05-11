@@ -67,23 +67,7 @@ shinyUI(pageWithSidebar(
     ),
     
     conditionalPanel(
-      condition = "input.tabselected==2",
-      uiOutput("choose_columns_randomized"),
-      downloadButton('downloader2', 'Download plot'),
-      fluidRow(column(
-        6, radioButtons("xaxisGrp2", "Variable 1 of Interest:", c("1" = "1", "2" =
-                                                                    "2"))
-      ),
-      column(
-        6,
-        checkboxGroupInput("yaxisGrp2", "Variable 2 of Interest:", c("1" = "1", "2" =
-                                                                       "2"))
-      ))
-    ),
-    
-    conditionalPanel(
-      condition = "input.tabselected==5",
-      
+      condition = "input.tabselected==3",
       downloadButton('downloader3', 'Download plot'),
       radioButtons("xaxisGrpHist", "Variable of Interest:", c("1" = "1", "2" =
                                                                     "2"))
@@ -102,8 +86,9 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(
       tabPanel("File", value = 0, tableOutput("contents")),
+      tabPanel("Variable Frequencies", value=3, plotOutput("counts_plot")),
       tabPanel("Exploratory Plot", value = 1, plotOutput("exploratory_plot")),
-      tabPanel("Heat Map", value = 2, plotOutput("heat_map")),
+      tabPanel("Correlation Matrix", value = 2, plotOutput("correlations")),
       id = "tabselected"
     )
   )
