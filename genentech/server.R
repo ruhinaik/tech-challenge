@@ -119,7 +119,7 @@ shinyServer(function(input, output, session) {
       yv <- input$yaxisGrp
       if (!is.null(xv) & !is.null(yv)) {
         if (sum(xv %in% names(df)) > 0) {
-          # supresses error when changing files
+          # suppresses error when changing files
           
           # SAMPLE LEVEL PLOTS 
           mdf <- melt(df, id.vars = xv, measure.vars = yv)
@@ -134,7 +134,6 @@ shinyServer(function(input, output, session) {
               label = "count"
             )) +
             geom_col(position = "stack")
-  
         }
       } 
     }
@@ -143,9 +142,8 @@ shinyServer(function(input, output, session) {
   
   
   # only look at counts of selected variable
-  # generate patient level data 
   observe({
-    if (input$tabselected == 5) {
+    if (input$tabselected == 3) {
       df <- file_data()
       df <- file_data() %>% clean_names()
       dsnames = names(df)
@@ -163,52 +161,54 @@ shinyServer(function(input, output, session) {
   })
   
   
-  # output$counts_plot <- renderPlot({
-  #   print("Plotting randomized plot.")
-  #  
-  #   df <- file_data()
-  # 
-  #   df <- subset(df, select = -c(STUDYID))
-  #   gp <- NULL
-  #   if (!is.null(df)) {
-  #     xv <- input$xaxisGrp3
-  #     if (!is.null(xv) & !is.null(yv)) {
-  #       if (sum(xv %in% names(df)) > 0) {
-  #         # supresses error when changing files
-  #         mdf <- melt(df, id.vars = xv, measure.vars = yv)
-  #         
-  #         mdf <- cbind(mdf, count = 1)
-  #         
-  #         gp <- mdf %>%
-  #           ggplot(aes_string(
-  #             x = xv,
-  #             y = "count",
-  #             fill = "value",
-  #             label = "count"
-  #           )) +
-  #           geom_col(position = "stack")
-  #       }
-  #     }
-  #   }
-  #   return(gp)
-  # })
+  output$counts_plot <- renderPlot({
+    print("Plotting randomized plot.")
+    df <- file_data()
+    df <- subset(df, select = -c(STUDYID))
+    gp <- NULL
+    if (!is.null(df)) {
+      xv <- input$xaxisGrp3
+      if (!is.null(xv) & !is.null(yv)) {
+        if (sum(xv %in% names(df)) > 0) {
+          # suppresses error when changing files
+          mdf <- melt(df, id.vars = xv, measure.vars = yv)
+
+          mdf <- cbind(mdf, count = 1)
+
+          gp <- mdf %>%
+            ggplot(aes_string(
+              x = xv,
+              y = "count",
+              fill = "value",
+              label = "count"
+            )) +
+            geom_col(position = "stack")
+        }
+      }
+    }
+    return(gp)
+  })
   
-  # correlation plots code
-  correlation <- reactive({
+  # heatmap plot
+  heat_map_plot <- reactive({
     df <- file_data()
     df <- file_data() %>% clean_names()
+    
     # removing columns with all NA values
     df <- df[, colSums(is.na(df)) < nrow(df)]
     df[is.na(df)] <- 0
+    
+    # removing columns with less than 2 factor levels 
+    df <- df[, sapply(df, function(col) length(unique(col))) > 1]
     names = colnames(df)
-    print(names)
-    print("these are the names")
+   
+    
     formula = paste0(names, collapse = " + ")
     formula = paste("~", formula)
-    
+
     # compute correlation for the variables in the names variable
     canCorPairs(formula, df)
-    
+
     # make upper triangular heatmap
     corrmatrix <- corrplot(canCorPairs(formula, df), type = "upper")
     
@@ -216,7 +216,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$heat_map <- renderPlot({
-    correlation()
+    heat_map_plot()
   })
   
   
@@ -339,6 +339,7 @@ shinyServer(function(input, output, session) {
     
     plot_list = list()
     len = length(cb_options) 
+    
     for (i in 1:len){
       # for each column name, make a counts plot
       col_num1 <- which(colnames(df) == cb_options[[i]])
