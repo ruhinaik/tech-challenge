@@ -15,6 +15,7 @@ stopifnot(any(sapply(packages, installAndLoad, always_install=FALSE)))
 devtools::install_github("taiyun/corrplot", force=TRUE)
 devtools::install_github("ekstroem/dataReporter", force=TRUE)
 BiocManager::install("variancePartition", force=TRUE)
+library(variancePartition)
 library(ggplot2); theme_set(theme_clean())
 
 
@@ -91,6 +92,7 @@ shinyUI(pageWithSidebar(
     textOutput("text1"),
     textOutput("version"),
     helpText("Written in R/Shiny by R. Naik."),
+    downloadButton('downloadFile', 'Download merged file'),
     downloadButton('downloadDataReport', 'Download data report'),
     downloadButton('downloadPlots', 'Download plots')
   ),
@@ -101,7 +103,7 @@ shinyUI(pageWithSidebar(
     tabsetPanel(
       tabPanel("File", value = 0, tableOutput("contents")),
       tabPanel("Exploratory Plot", value = 1, plotOutput("exploratory_plot")),
-      tabPanel("Correlation Matrix", value = 2, plotOutput("heat_map")),
+      tabPanel("Heat Map", value = 2, plotOutput("heat_map")),
       id = "tabselected"
     )
   )
