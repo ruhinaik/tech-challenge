@@ -9,7 +9,7 @@ installAndLoad <- function(package, always_install = FALSE){
 
 packages <- c( "shiny", "ggthemes", "tidyverse", "dplyr", "plyr", 
                "plotly", "janitor", "reshape", "corrplot", "devtools", "BiocManager", 
-               "dataReporter", "knitr", "grid", "gridExtra")
+               "dataReporter", "knitr", "grid", "gridExtra", "ggpubr")
 
 stopifnot(any(sapply(packages, installAndLoad, always_install=FALSE)))
 devtools::install_github("taiyun/corrplot", force=TRUE)
@@ -57,28 +57,20 @@ shinyUI(pageWithSidebar(
       uiOutput("choose_columns"),
       downloadButton('downloader1', 'Download plot'),
       fluidRow(column(
-        6, radioButtons("xaxisGrp", "Variable 1 of Interest:", c("1" = "1", "2" =
+        6, radioButtons("xaxisGrp1", "Variable 1 of Interest:", c("1" = "1", "2" =
                                                                    "2"))
       ),
       column(
-        6, checkboxGroupInput("yaxisGrp", "Variable 2 of Interest:", c("1" = "1", "2" =
+        6, checkboxGroupInput("yaxisGrp1", "Variable 2 of Interest:", c("1" = "1", "2" =
                                                                          "2"))
       ))
-    ),
-    
-    conditionalPanel(
-      condition = "input.tabselected==3",
-      downloadButton('downloader3', 'Download plot'),
-      radioButtons("xaxisGrpHist", "Variable of Interest:", c("1" = "1", "2" =
-                                                                    "2"))
     ),
     
     textOutput("text1"),
     textOutput("version"),
     helpText("Written in R/Shiny by R. Naik."),
     downloadButton('downloadFile', 'Download merged file'),
-    downloadButton('downloadDataReport', 'Download data report'),
-    downloadButton('downloadPlots', 'Download plots')
+    downloadButton('downloadDataReport', 'Download data report')
   ),
   
   
@@ -86,8 +78,7 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(
       tabPanel("File", value = 0, tableOutput("contents")),
-      tabPanel("Variable Frequencies", value=3, plotOutput("counts_plot")),
-      tabPanel("Exploratory Plot", value = 1, plotOutput("exploratory_plot")),
+      tabPanel("Exploratory Bar Plots", value = 1, plotOutput("exploratory_plot")),
       tabPanel("Correlation Matrix", value = 2, plotOutput("correlations")),
       id = "tabselected"
     )
