@@ -210,7 +210,7 @@ shinyServer(function(input, output, session) {
   
   output$downloadFile <- downloadHandler(
     filename = function() {
-      paste(input$title, 'merged_data.csv', sep = '-')
+      paste(input$title, 'merged_data.tsv', sep = '-')
     },
     content = function(file) {
       write.csv(file_data(), file, row.names=FALSE)
